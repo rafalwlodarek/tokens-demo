@@ -167,7 +167,7 @@
       },
       "inverse-negative": {
         "$type": "color",
-        "$value": "#000000"
+        "$value": "#FFFFFF"
       },
       "inverse-neutral-quiet": {
         "$type": "color",
