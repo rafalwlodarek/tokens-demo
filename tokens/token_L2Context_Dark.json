@@ -207,7 +207,7 @@
       },
       "neutral-regular": {
         "$type": "color",
-        "$value": "#ffffff"
+        "$value": "#000000"
       },
       "positive": {
         "$type": "color",
