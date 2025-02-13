@@ -4,42 +4,41 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
+    paths:
+      - "tokens/**"
 
 jobs:
-  transform-tokens:
+  build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: 18
+          cache: 'npm'  # Caches 'node_modules'
 
-      - name: Cache Node.js modules
-        uses: actions/cache@v2
+      - name: Cache node_modules
+        uses: actions/cache@v3
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            npm-${{ runner.os }}-
 
       - name: Install dependencies
-        run: npm install style-dictionary axios web-streams-polyfill
+        run: npm ci
 
-      - name: Transform tokens using Style Dictionary
-        run: |
-          node transformTokens.js
+      - name: Run Style Dictionary transformation
+        run: npx style-dictionary build
 
-      - name: Commit and push changes
+      - name: Commit and push transformed tokens
         run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add .
-          git commit -m "Update design tokens"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/
+          git commit -m "chore: update transformed design tokens" || echo "xxx"
           git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
