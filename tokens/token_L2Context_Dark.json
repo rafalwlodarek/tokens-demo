@@ -151,7 +151,7 @@
       },
       "brand-blue": {
         "$type": "color",
-        "$value": "#000000"
+        "$value": "#148aff1f"
       },
       "brand-orange": {
         "$type": "color",
