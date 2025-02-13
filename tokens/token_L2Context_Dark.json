@@ -16,7 +16,7 @@
         },
         "positive": {
           "$type": "color",
-          "$value": "#00e176"
+          "$value": "#00e177"
         }
       },
       "Tinted": {
