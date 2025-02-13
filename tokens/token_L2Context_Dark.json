@@ -199,7 +199,7 @@
       },
       "neutral-quiet": {
         "$type": "color",
-        "$value": "#c2cad6"
+        "$value": "#000000"
       },
       "neutral-quieter": {
         "$type": "color",
