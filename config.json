@@ -1,0 +1,35 @@
+{
+  "source": ["tokens/**/*.json"],
+  "platforms": {
+    "compose": {
+      "transformGroup": "android",
+      "buildPath": "output/android/",
+      "files": [
+        {
+          "destination": "Tokens.kt",
+          "format": "compose/object"
+        }
+      ]
+    },
+    "swiftui": {
+      "transformGroup": "ios-swift",
+      "buildPath": "output/ios/",
+      "files": [
+        {
+          "destination": "Tokens.swift",
+          "format": "ios-swift/class.swift"
+        }
+      ]
+    },
+    "scss": {
+      "transformGroup": "scss",
+      "buildPath": "output/web/",
+      "files": [
+        {
+          "destination": "_tokens.scss",
+          "format": "scss/variables"
+        }
+      ]
+    }
+  }
+}
