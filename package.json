@@ -1,0 +1,11 @@
+{
+  "name": "tokens-demo",
+  "version": "1.0.0",
+  "description": "Style Dictionary token transformation",
+  "scripts": {
+    "build": "style-dictionary build"
+  },
+  "dependencies": {
+    "style-dictionary": "^3.0.0"
+  }
+}
