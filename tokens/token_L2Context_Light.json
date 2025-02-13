@@ -147,7 +147,7 @@
     "Text": {
       "accent": {
         "$type": "color",
-        "$value": "#000000"
+        "$value": "#fafafa"
       },
       "brand-blue": {
         "$type": "color",
