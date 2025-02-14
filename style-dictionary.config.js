@@ -69,7 +69,7 @@ module.exports = {
       transforms: [
         'flatten/json',        // Flatten tokens
         'name/cti/compose',    // Format Compose variable names
-        'color/rgba'           // Apply standard color transformation for Compose
+        // Removed 'color/rgba' transform as it caused issues
       ],
       buildPath: 'build/compose/',  // Output path for Compose files
       files: [
