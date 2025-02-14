@@ -101,7 +101,7 @@ module.exports = {
       files: [
         {
           destination: 'Tokens.swift',
-          format: 'swift/enum',
+          format: 'ios-swift/enum.swift',
         },
       ],
     },
