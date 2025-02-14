@@ -1,35 +1,41 @@
 {
   "source": ["tokens/**/*.json"],
+  "transform": {
+    "custom/flatten": {
+      "type": "attribute",
+      "matcher": "*",
+      "transformer": (token) => {
+        return {
+          type: token.$type,
+          value: token.$value
+        };
+      }
+    }
+  },
   "platforms": {
-    "compose": {
-      "transformGroup": "android",
-      "buildPath": "output/android/",
-      "files": [
-        {
-          "destination": "Tokens.kt",
-          "format": "compose/object"
-        }
-      ]
-    },
-    "swiftui": {
-      "transformGroup": "ios-swift",
-      "buildPath": "output/ios/",
-      "files": [
-        {
-          "destination": "Tokens.swift",
-          "format": "ios-swift/class.swift"
-        }
-      ]
-    },
     "scss": {
       "transformGroup": "scss",
       "buildPath": "output/web/",
-      "files": [
-        {
-          "destination": "_tokens.scss",
-          "format": "scss/variables"
-        }
-      ]
+      "files": [{
+        "destination": "_tokens.scss",
+        "format": "scss/variables"
+      }]
+    },
+    "ios": {
+      "transformGroup": "ios",
+      "buildPath": "output/ios/",
+      "files": [{
+        "destination": "Tokens.swift",
+        "format": "ios/colors.swift"
+      }]
+    },
+    "android": {
+      "transformGroup": "android",
+      "buildPath": "output/android/",
+      "files": [{
+        "destination": "Tokens.kt",
+        "format": "android/colors"
+      }]
     }
   }
 }
