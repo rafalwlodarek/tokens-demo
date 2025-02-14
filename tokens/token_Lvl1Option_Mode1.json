@@ -3,7 +3,7 @@
     "Neutral": {
       "0": {
         "$type": "color",
-        "$value": "#fffffe"
+        "$value": "#fffffd"
       },
       "100": {
         "$type": "color",
