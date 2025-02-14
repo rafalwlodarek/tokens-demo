@@ -95,7 +95,7 @@ module.exports = {
       transforms: [
         'flatten/json',
         'name/cti/swift',
-        'color/rgba',
+        'color/hex',
       ],
       buildPath: 'build/swift/',
       files: [
