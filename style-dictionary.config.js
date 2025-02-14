@@ -6,11 +6,11 @@ StyleDictionary.registerTransform({
   type: 'value',
   transformer: (token) => {
     const flattenedToken = {};
-    for (let [key, value] of Object.entries(token)) {
-      if (key.startsWith('$')) {
-        flattenedToken[key.slice(1)] = value;
+    for (let [type, value] of Object.entries(token)) {
+      if (type.startsWith('$')) {
+        flattenedToken[type.slice(1)] = value;
       } else {
-        flattenedToken[key] = value;
+        flattenedToken[type] = value;
       }
     }
     return flattenedToken;
