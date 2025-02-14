@@ -31,18 +31,18 @@ module.exports = {
       files: [
         {
           destination: "Tokens.swift",
-          format: "ios/colors.swift",
+          format: "ios-swift/any.swift",
         },
       ],
     },
     android: {
-      transformGroup: "android",
-      buildPath: "output/android/",
+      transformGroup: "compose",
+      buildPath: "output/compose/",
       transforms: ["custom/flatten"],
       files: [
         {
           destination: "Tokens.kt",
-          format: "android/colors",
+          format: "compose/object",
         },
       ],
     },
