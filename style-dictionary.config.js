@@ -1,6 +1,5 @@
 const StyleDictionary = require('style-dictionary');
 
-// Register custom transform to flatten keys (removes $ prefix from type and value)
 StyleDictionary.registerTransform({
   name: 'flatten/json',
   type: 'value',
@@ -57,7 +56,6 @@ StyleDictionary.registerFormat({
   },
 });
 
-// Configure Style Dictionary
 module.exports = {
   source: ['tokens/**/*.json'],
   platforms: {
