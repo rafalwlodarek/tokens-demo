@@ -1,87 +1,96 @@
 const StyleDictionary = require('style-dictionary');
 
-// Register custom transforms
+// Register custom transform to flatten keys (removes $ prefix from type and value)
 StyleDictionary.registerTransform({
-  name: 'attribute/cti',
-  type: 'name',
-  transformer: (token) => `${token.name}`,
-});
-
-StyleDictionary.registerTransform({
-  name: 'name/cti/pascal',
-  type: 'name',
-  transformer: (token) => `${token.name.replace(/-/g, '')}`, // Converts names like "some-name" to "SomeName"
-});
-
-StyleDictionary.registerTransform({
-  name: 'color/UIColor',
+  name: 'flatten/json',
   type: 'value',
   transformer: (token) => {
-    // Example transformation for color value
-    if (token.value.includes('rgba')) {
-      return token.value.replace('rgba', 'UIColor').replace(')', ')');
+    // Remove $ from type and value keys and return the new structure
+    const flattenedToken = {};
+    for (let [key, value] of Object.entries(token)) {
+      if (key.startsWith('$')) {
+        flattenedToken[key.slice(1)] = value; // Remove the $ prefix
+      } else {
+        flattenedToken[key] = value;
+      }
     }
-    return token.value;
-  },
+    return flattenedToken;
+  }
 });
 
+// Register SCSS specific transforms
 StyleDictionary.registerTransform({
-  name: 'content/objC/literal',
-  type: 'value',
+  name: 'name/cti/scss',
+  type: 'name',
   transformer: (token) => {
-    return `"${token.value}"`; // Wrap values in double quotes for Objective-C literals
-  },
+    return `$${token.name.replace(/\./g, '-')}`; // SCSS variable format: $name
+  }
 });
 
+// Register Compose specific transforms
 StyleDictionary.registerTransform({
-  name: 'asset/objC/literal',
-  type: 'value',
+  name: 'name/cti/compose',
+  type: 'name',
   transformer: (token) => {
-    return `"${token.value}"`; // Similar transformation for assets
-  },
+    return token.name.replace(/\./g, '_'); // Compose uses underscores, no $
+  }
 });
 
+// Register Swift specific transforms
 StyleDictionary.registerTransform({
-  name: 'size/remToPt',
-  type: 'value',
+  name: 'name/cti/swift',
+  type: 'name',
   transformer: (token) => {
-    // Example transformation from rem to pt (1 rem = 16 pt)
-    if (token.value.includes('rem')) {
-      const valueInRem = parseFloat(token.value);
-      return `${valueInRem * 16}pt`;
-    }
-    return token.value;
-  },
+    return token.name.charAt(0).toUpperCase() + token.name.slice(1).replace(/\./g, ''); // Swift format: camelCase
+  }
 });
 
-StyleDictionary.registerTransform({
-  name: 'font/objC/literal',
-  type: 'value',
-  transformer: (token) => {
-    return `"${token.value}"`; // Wrap font values in double quotes for Objective-C literals
-  },
-});
-
-// Configure the Style Dictionary build system
+// Configure Style Dictionary
 module.exports = {
-  source: ['tokens/**/*.json'], // Include all token JSON files inside the 'tokens' directory
+  source: ['tokens/**/*.json'],  // Look for token files inside the tokens folder
   platforms: {
-    ios: {
-      transformGroup: 'ios', // This is used to group your transforms and can be customized
+    scss: {
+      transformGroup: 'scss',
       transforms: [
-        'attribute/cti',           // Custom transform for attribute/cti
-        'name/cti/pascal',         // Custom transform for name/cti/pascal
-        'color/UIColor',           // Custom transform for color/UIColor
-        'content/objC/literal',    // Custom transform for content/objC/literal
-        'asset/objC/literal',      // Custom transform for asset/objC/literal
-        'size/remToPt',            // Custom transform for size/remToPt
-        'font/objC/literal',       // Custom transform for font/objC/literal
+        'flatten/json',    // Flatten tokens (remove $ from type and value)
+        'name/cti/scss',   // Format SCSS variables
+        'color/css'        // Apply standard color transformation
       ],
-      buildPath: 'build/ios/', // Path where the generated files will be stored
+      buildPath: 'build/scss/',  // Output path for SCSS files
       files: [
         {
-          destination: 'tokens.json',  // Output file name
-          format: 'json',              // Output format
+          destination: '_variables.scss',
+          format: 'scss/variables',  // Format as SCSS variables
+        },
+      ],
+    },
+    compose: {
+      transformGroup: 'compose',
+      transforms: [
+        'flatten/json',        // Flatten tokens
+        'name/cti/compose',    // Format Compose variable names
+        'color/rgba'           // Apply standard color transformation for Compose
+      ],
+      buildPath: 'build/compose/',  // Output path for Compose files
+      files: [
+        {
+          destination: 'tokens.kt',
+          format: 'compose/kt',   // Format as Compose (Kotlin) file
+        },
+      ],
+    },
+    swift: {
+      transformGroup: 'swift',
+      transforms: [
+        'flatten/json',        // Flatten tokens
+        'name/cti/swift',      // Format Swift variable names
+        'color/rgba'           // Apply standard color transformation for Swift
+      ],
+      buildPath: 'build/swift/',  // Output path for Swift files
+      files: [
+        {
+          destination: 'Tokens.swift',
+          format: 'swift/enum',    // Format as Swift Enum
         },
       ],
     },
