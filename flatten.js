@@ -1,62 +1,67 @@
 const fs = require('fs');
+const path = require('path');
 
-// Flatten the object function
-function flattenObject(obj, prefix = '') {
-  let items = [];
+const tokensDirectory = './tokens'; // Directory containing your token files
 
-  for (const [key, value] of Object.entries(obj)) {
-    const newKey = prefix ? `${prefix}.${key}` : key;
+// Function to flatten JSON and remove the $ prefix from keys
+function flattenAndRemoveDollar(jsonObject) {
+  const flattened = {};
 
-    if (typeof value === 'object' && !Array.isArray(value) && value !== null) {
-      // If the value is an object, recurse into it
-      items = items.concat(flattenObject(value, newKey));
+  function recurse(current, prop) {
+    if (Object(current) !== current) {
+      flattened[prop] = current;
     } else {
-      items.push({ name: newKey, value });
+      for (const p in current) {
+        if (current.hasOwnProperty(p)) {
+          recurse(current[p], prop ? `${prop}.${p}` : p);
+        }
+      }
     }
   }
 
-  return items;
+  recurse(jsonObject, '');
+  return flattened;
 }
 
-// Remove `$` from value and type (if exists)
-function removeDollarSign(tokens) {
-  return tokens.map(token => {
-    // Remove $ from the token name and value
-    const newName = token.name.replace(/\$/g, '');
-    let newValue = token.value;
-
-    if (typeof newValue === 'string') {
-      newValue = newValue.replace(/\$/g, ''); // Remove $ from the value
-    }
-
-    return { name: newName, value: newValue };
-  });
-}
-
-// Load the input JSON file (assumes the input file is `tokens.json`)
-const inputFile = './tokens.json';
-const outputFile = './flattened-tokens.json';
-
-fs.readFile(inputFile, 'utf8', (err, data) => {
+// Get all .json files in the 'tokens' directory
+fs.readdir(tokensDirectory, (err, files) => {
   if (err) {
-    console.error('Error reading input file:', err);
+    console.error('Error reading directory:', err);
     return;
   }
 
-  const inputJson = JSON.parse(data);
+  files.filter(file => file.endsWith('.json')).forEach(file => {
+    const filePath = path.join(tokensDirectory, file);
 
-  // Flatten the JSON structure
-  const flattenedTokens = flattenObject(inputJson);
+    // Read the JSON file
+    fs.readFile(filePath, 'utf8', (err, data) => {
+      if (err) {
+        console.error('Error reading file:', err);
+        return;
+      }
 
-  // Remove dollar signs from values and types
-  const cleanedTokens = removeDollarSign(flattenedTokens);
+      // Parse JSON data
+      const jsonData = JSON.parse(data);
 
-  // Write the processed tokens back to a new JSON file
-  fs.writeFile(outputFile, JSON.stringify({ tokens: cleanedTokens }, null, 2), 'utf8', err => {
-    if (err) {
-      console.error('Error writing output file:', err);
-    } else {
-      console.log('Flattened and cleaned tokens written to', outputFile);
-    }
+      // Flatten and remove $ prefix from type and value keys
+      const flattenedData = flattenAndRemoveDollar(jsonData);
+
+      // Remove the "$" prefix from keys
+      const finalData = Object.fromEntries(
+        Object.entries(flattenedData).map(([key, value]) => [
+          key.replace(/^(\$)/, ''), value
+        ])
+      );
+
+      // Write the flattened JSON back to a file
+      const outputFilePath = path.join(tokensDirectory, `flattened-${file}`);
+      fs.writeFile(outputFilePath, JSON.stringify(finalData, null, 2), 'utf8', (err) => {
+        if (err) {
+          console.error('Error writing file:', err);
+        } else {
+          console.log(`Successfully processed and saved: ${outputFilePath}`);
+        }
+      });
+    });
   });
 });
