@@ -51,7 +51,7 @@ jobs:
 
       - name: Run Style Dictionary transformation
         run: |
-          npx style-dictionary build
+          npx style-dictionary build --config style-dictionary.config.js
 
       - name: Commit and push transformed tokens
         env:
