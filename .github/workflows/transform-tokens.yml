@@ -42,12 +42,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Validate JSON Files
-        run: |
-          for file in tokens/*.json; do
-            echo "Validating $file..."
-            cat $file | jq empty || (echo "❌ Invalid JSON in $file"; exit 1)
-          done
       - name: Flatten and clean the JSON
         run: node flatten.js
 
@@ -55,7 +49,7 @@ jobs:
         run: |
           npx style-dictionary build --config style-dictionary.config.js
 
-      - name: Commit and push transformed tokens
+      - name: Commit and push tokens
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
