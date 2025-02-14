@@ -48,6 +48,8 @@ jobs:
             echo "Validating $file..."
             cat $file | jq empty || (echo "❌ Invalid JSON in $file"; exit 1)
           done
+      - name: Flatten and clean the JSON
+        run: node flatten.js
 
       - name: Run Style Dictionary transformation
         run: |
